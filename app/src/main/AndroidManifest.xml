@@ -19,6 +19,12 @@
 
         </activity>
 
+        <provider
+            android:authorities="com.buzbuz.dikkeneksoundboard.contentprovider"
+            android:name=".SoundContentProvider"
+            android:grantUriPermissions="true">
+        </provider>
+
     </application>
 
 </manifest>
