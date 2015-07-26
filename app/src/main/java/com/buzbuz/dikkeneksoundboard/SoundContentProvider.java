@@ -81,7 +81,11 @@ public class SoundContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+        int rowsUpdated = db.update(SoundDatabaseHelper.TABLE_NAME, values, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
+    }
     }
 
     private void checkColumns(String[] projection) {
