@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_height="60dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@color/primary_color">
 
         <TextView
             android:id="@+id/sound_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:gravity="center_vertical"
             android:textColor="@color/text_color"
-            android:background="@color/primary_color"
-            android:textSize="25sp"
+            android:textSize="22sp"
             android:maxLines="1"
-            android:ellipsize="marquee"/>
+            android:ellipsize="marquee"
+            tools:text="Va te faire refaire"/>
+
+        <CheckBox
+            android:id="@+id/btn_fav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            style="?android:attr/starStyle"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

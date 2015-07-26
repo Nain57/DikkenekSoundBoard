@@ -65,6 +65,7 @@ public class SoundListFragment extends ListFragment {
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             mCurrentCursor = null;
+            mSoundPathColumnIndex = -1;
             ((SoundListCursorAdapter) getListAdapter()).swapCursor(null);
         }
     };
