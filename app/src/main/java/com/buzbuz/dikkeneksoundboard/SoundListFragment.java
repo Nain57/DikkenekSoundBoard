@@ -1,9 +1,9 @@
 package com.buzbuz.dikkeneksoundboard;
 
-import android.app.ListFragment;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -29,6 +29,9 @@ public class SoundListFragment extends ListFragment {
     /** Tag for logs */
     private static final String LOG_TAG = "SoundListFragment";
 
+    /** Arguments for fragment creation */
+    private static final String ARG_FAVOURITES = "arg_favourite";
+
     /** Loader id */
     private static final int LOADER_ID = 1;
 
@@ -40,6 +43,7 @@ public class SoundListFragment extends ListFragment {
         SoundDatabaseHelper.SoundColumn.COLUMN_NAME_FAVOURITE
     };
 
+    private static final String FAVOURITES_SELECTION = SoundDatabaseHelper.SoundColumn.COLUMN_NAME_FAVOURITE + " = ? ";
     private static final String SEARCH_SELECTION = SoundDatabaseHelper.SoundColumn.COLUMN_NAME_TITLE + " LIKE ?";
 
     private Cursor mCurrentCursor;
@@ -48,11 +52,17 @@ public class SoundListFragment extends ListFragment {
     private final LoaderManager.LoaderCallbacks<Cursor> mSoundLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            if (TextUtils.isEmpty(mCurrentQuery)) {
-                return new CursorLoader(getActivity(), SoundContentProvider.CONTENT_URI, PROJECTION, null, null, null);
+            if (mIsFavourites && !TextUtils.isEmpty(mCurrentQuery)) {
+                return new CursorLoader(getActivity(), SoundContentProvider.CONTENT_URI, PROJECTION,
+                        FAVOURITES_SELECTION + " AND " + SEARCH_SELECTION, new String[] { "1", mCurrentQuery + "%" }, null);
+            } else if (mIsFavourites) {
+                return new CursorLoader(getActivity(), SoundContentProvider.CONTENT_URI, PROJECTION,
+                        FAVOURITES_SELECTION, new String[] { "1" }, null);
+            } else if (!TextUtils.isEmpty(mCurrentQuery)) {
+                return new CursorLoader(getActivity(), SoundContentProvider.CONTENT_URI, PROJECTION,
+                        SEARCH_SELECTION, new String[] { mCurrentQuery + "%" }, null);
             }
-            return new CursorLoader(getActivity(), SoundContentProvider.CONTENT_URI, PROJECTION,
-                    SEARCH_SELECTION, new String[] { mCurrentQuery + "%" }, null);
+            return new CursorLoader(getActivity(), SoundContentProvider.CONTENT_URI, PROJECTION, null, null, null);
         }
 
         @Override
@@ -92,6 +102,26 @@ public class SoundListFragment extends ListFragment {
     };
 
     private MediaPlayer mPlayer;
+    private boolean mIsFavourites;
+
+    /**
+     * Create a new instance of the sound list fragment
+     * @param favourites Display the favourite start
+     * @return The preformated SoundListFragment
+     */
+    public static SoundListFragment newInstance(boolean favourites) {
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_FAVOURITES, favourites);
+        SoundListFragment fragment = new SoundListFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mIsFavourites = getArguments().getBoolean(ARG_FAVOURITES);
+    }
 
     @Override
     public void onResume() {
@@ -104,9 +134,9 @@ public class SoundListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(!mIsFavourites);
 
-        setListAdapter(new SoundListCursorAdapter(getActivity(), null, false));
+        setListAdapter(new SoundListCursorAdapter(getActivity(), null, false, !mIsFavourites));
         getLoaderManager().initLoader(LOADER_ID, null, mSoundLoaderCallbacks);
     }
 

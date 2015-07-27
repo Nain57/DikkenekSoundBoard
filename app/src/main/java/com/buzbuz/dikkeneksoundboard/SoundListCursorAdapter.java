@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 public class SoundListCursorAdapter extends CursorAdapter {
 
+    private boolean mDisplayFavourites;
     private int mIdColumnIndex;
     private int mTitleColumnIndex;
     private int mFavouriteColumnIndex;
@@ -21,8 +22,9 @@ public class SoundListCursorAdapter extends CursorAdapter {
         CheckBox mFavouritesCheckBox;
     }
 
-    public SoundListCursorAdapter(Context context, Cursor c, boolean autoRequery) {
+    public SoundListCursorAdapter(Context context, Cursor c, boolean autoRequery, boolean favourites) {
         super(context, c, autoRequery);
+        mDisplayFavourites = favourites;
     }
 
     @Override
@@ -33,6 +35,9 @@ public class SoundListCursorAdapter extends CursorAdapter {
         ViewHolder holder = new ViewHolder();
         holder.mTitleView = (TextView) listItemView.findViewById(R.id.sound_title);
         holder.mFavouritesCheckBox = (CheckBox) listItemView.findViewById(R.id.btn_fav);
+        if (!mDisplayFavourites) {
+            holder.mFavouritesCheckBox.setVisibility(View.GONE);
+        }
         listItemView.setTag(holder);
 
         return listItemView;
@@ -43,21 +48,23 @@ public class SoundListCursorAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         holder.mTitleView.setText(cursor.getString(mTitleColumnIndex));
 
-        final int id = cursor.getInt(mIdColumnIndex);
-        final int favValue = cursor.getInt(mFavouriteColumnIndex);
-        holder.mFavouritesCheckBox.setChecked(favValue == 1);
-        holder.mFavouritesCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(SoundDatabaseHelper.SoundColumn.COLUMN_NAME_FAVOURITE, favValue == 0 ? 1 : 0);
+        if (mDisplayFavourites) {
+            final int id = cursor.getInt(mIdColumnIndex);
+            final int favValue = cursor.getInt(mFavouriteColumnIndex);
+            holder.mFavouritesCheckBox.setChecked(favValue == 1);
+            holder.mFavouritesCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContentValues values = new ContentValues();
+                    values.put(SoundDatabaseHelper.SoundColumn.COLUMN_NAME_FAVOURITE, favValue == 0 ? 1 : 0);
 
-                context.getContentResolver().update(SoundContentProvider.CONTENT_URI,
-                        values,
-                        SoundDatabaseHelper.SoundColumn._ID + "=" + id,
-                        null);
-            }
-        });
+                    context.getContentResolver().update(SoundContentProvider.CONTENT_URI,
+                            values,
+                            SoundDatabaseHelper.SoundColumn._ID + "=" + id,
+                            null);
+                }
+            });
+        }
     }
 
 
