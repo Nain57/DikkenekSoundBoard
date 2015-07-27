@@ -39,7 +39,7 @@ public class SoundDatabaseHelper extends SQLiteOpenHelper {
     }
     /** Name of the table containing all sounds */
     public static final String TABLE_NAME = "sounds";
-    
+
     private static final String TEXT_TYPE = "TEXT";
     private static final String INTEGER_TYPE = "INTEGER";
     private static final String SQL_CREATE_DATABASE =

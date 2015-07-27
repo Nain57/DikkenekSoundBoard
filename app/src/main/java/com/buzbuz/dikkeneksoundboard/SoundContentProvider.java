@@ -90,8 +90,8 @@ public class SoundContentProvider extends ContentProvider {
 
     private void checkColumns(String[] projection) {
         if (projection != null) {
-            HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
-            HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(SoundDatabaseHelper.SoundColumn.COLUMNS_LIST));
+            HashSet<String> requestedColumns = new HashSet<>(Arrays.asList(projection));
+            HashSet<String> availableColumns = new HashSet<>(Arrays.asList(SoundDatabaseHelper.SoundColumn.COLUMNS_LIST));
             if (!availableColumns.containsAll(requestedColumns)) {
                 throw new IllegalArgumentException("Unknown columns in projection " + requestedColumns.toString());
             }
