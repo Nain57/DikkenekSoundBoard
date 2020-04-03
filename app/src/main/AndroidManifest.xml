@@ -8,11 +8,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
-        <provider
-            android:authorities="com.buzbuz.dikkeneksoundboard.contentprovider"
-            android:name=".provider.SoundContentProvider"
-            android:exported="false"/>
-
     </application>
 
 </manifest>
