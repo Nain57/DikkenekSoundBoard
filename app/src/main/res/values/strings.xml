@@ -18,4 +18,5 @@
     <string name="app_name">Dikkenek SoundBoard</string>
     <string name="tab_all_sounds">All</string>
     <string name="tab_favourites_sounds">Favourites</string>
+    <string name="empty">Empty</string>
 </resources>

@@ -17,10 +17,22 @@
 package com.buzbuz.dikkeneksoundboard.ui
 
 import android.os.Bundle
-import androidx.fragment.app.ListFragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+
+import com.buzbuz.dikkeneksoundboard.R
+import com.buzbuz.dikkeneksoundboard.SoundViewModel
+import com.buzbuz.dikkeneksoundboard.database.Sound
 
 /** Fragment displaying the list of sounds. */
-class SoundListFragment : ListFragment() {
+class SoundListFragment : Fragment() {
 
     companion object {
 
@@ -41,6 +53,62 @@ class SoundListFragment : ListFragment() {
                     putBoolean(ARG_IS_FAVOURITES, isFavourites)
                 }
             }
+        }
+    }
+
+    /** View shown when there is no sounds available. */
+    private lateinit var emptyView: TextView
+    /** View displaying the list of sounds. */
+    private lateinit var soundsView: RecyclerView
+    /** View shown when the [observer] hasn't been notified yet. */
+    private lateinit var loadingView: ProgressBar
+    /** View model providing the sounds. */
+    private lateinit var soundModel: SoundViewModel
+
+    /** Tells if this fragment is for displaying the favourites sounds. */
+    private var isFavourites = false
+
+    /** Observer upon the list of sounds to be displayed by this fragment. */
+    private val observer: Observer<List<Sound>> = Observer { sounds ->
+        loadingView.visibility = View.GONE
+        if (sounds.isNullOrEmpty()) {
+            soundsView.visibility = View.GONE
+            emptyView.visibility = View.VISIBLE
+        } else {
+            soundsView.visibility = View.VISIBLE
+            emptyView.visibility = View.GONE
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_sound, container, false)
+
+        soundsView = rootView.findViewById(R.id.list)
+        loadingView = rootView.findViewById(R.id.progress)
+        emptyView = rootView.findViewById(R.id.empty)
+
+        return rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        isFavourites = arguments?.getBoolean(ARG_IS_FAVOURITES) ?: false
+        soundModel = ViewModelProvider(this).get(SoundViewModel::class.java)
+        if (isFavourites) {
+            soundModel.allFavouriteSounds.observe(this, observer)
+        } else {
+            soundModel.allSounds.observe(this, observer)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (isFavourites) {
+            soundModel.allFavouriteSounds.removeObservers(this)
+        } else {
+            soundModel.allSounds.removeObservers(this)
         }
     }
 }
