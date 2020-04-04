@@ -113,6 +113,11 @@ class SoundListFragment : Fragment() {
         soundsView.adapter = soundAdapter
     }
 
+    override fun onStop() {
+        super.onStop()
+        soundModel.stopSound()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -121,6 +126,5 @@ class SoundListFragment : Fragment() {
         } else {
             soundModel.allSounds.removeObservers(this)
         }
-        soundModel.stopSound()
     }
 }
