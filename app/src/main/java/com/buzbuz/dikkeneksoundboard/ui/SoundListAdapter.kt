@@ -69,10 +69,8 @@ class SoundViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
      * @param favouriteClickListener notified upon a click on the favourite checkbox of a sound item
      */
     fun bind(sound: Sound, soundClickListener: (Sound) -> Unit, favouriteClickListener: (Sound) -> Unit) {
-        itemView.title.apply {
-            text = sound.name
-            setOnClickListener { soundClickListener.invoke(sound) }
-        }
+        itemView.setOnClickListener { soundClickListener.invoke(sound) }
+        itemView.title.text = sound.name
         itemView.btn_fav.apply {
             isChecked = sound.isFavourite
             setOnClickListener { favouriteClickListener.invoke(sound) }
