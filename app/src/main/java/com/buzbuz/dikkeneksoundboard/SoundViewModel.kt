@@ -52,12 +52,4 @@ class SoundViewModel(application: Application) : AndroidViewModel(application) {
         val toggledSound = sound.copy(isFavourite = !sound.isFavourite)
         viewModelScope.launch { soundsDao.update(toggledSound) }
     }
-
-    fun playSound(sound: Sound) {
-        // TODO implement sound play
-    }
-
-    fun stopSound() {
-        // TODO implement sound stop
-    }
 }

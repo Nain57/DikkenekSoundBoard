@@ -64,8 +64,6 @@ class SoundListFragment : Fragment() {
     private lateinit var loadingView: ProgressBar
     /** View model providing the sounds. */
     private lateinit var soundModel: SoundViewModel
-    /** Adapter for [soundsView] responsible of showing the sounds as a list. */
-    private lateinit var soundAdapter: SoundListAdapter
 
     /** Tells if this fragment is for displaying the favourites sounds. */
     private var isFavourites = false
@@ -80,8 +78,6 @@ class SoundListFragment : Fragment() {
             soundsView.visibility = View.VISIBLE
             emptyView.visibility = View.GONE
         }
-
-        soundAdapter.sounds = sounds
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -99,18 +95,11 @@ class SoundListFragment : Fragment() {
 
         isFavourites = arguments?.getBoolean(ARG_IS_FAVOURITES) ?: false
         soundModel = ViewModelProvider(this).get(SoundViewModel::class.java)
-        soundAdapter = SoundListAdapter(soundModel::playSound, soundModel::toggleFavouriteState)
-
         if (isFavourites) {
             soundModel.allFavouriteSounds.observe(this, observer)
         } else {
             soundModel.allSounds.observe(this, observer)
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        soundsView.adapter = soundAdapter
     }
 
     override fun onDestroy() {
@@ -121,6 +110,5 @@ class SoundListFragment : Fragment() {
         } else {
             soundModel.allSounds.removeObservers(this)
         }
-        soundModel.stopSound()
     }
 }
