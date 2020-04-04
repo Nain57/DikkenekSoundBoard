@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; If not, see <http://www.gnu.org/licenses/>.
  */
-package com.buzbuz.dikkeneksoundboard
+package com.buzbuz.dikkeneksoundboard.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -29,6 +29,9 @@ import kotlinx.coroutines.launch
 
 /** ViewModel retrieving the database and exposing the sounds to the application. */
 class SoundViewModel(application: Application) : AndroidViewModel(application) {
+
+    /** Player managing the playback of the sounds. */
+    private val soundPlayer = SoundPlayer(application)
 
     /** The data access object for the sound database. */
     val soundsDao: SoundDao
@@ -53,11 +56,17 @@ class SoundViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { soundsDao.update(toggledSound) }
     }
 
+    /**
+     * Play the provided sound.
+     * <p>
+     * @param sound the sound to be played.
+     */
     fun playSound(sound: Sound) {
-        // TODO implement sound play
+        soundPlayer.play(sound)
     }
 
+    /** Stop the currently playing sound, if any. */
     fun stopSound() {
-        // TODO implement sound stop
+        soundPlayer.stop()
     }
 }

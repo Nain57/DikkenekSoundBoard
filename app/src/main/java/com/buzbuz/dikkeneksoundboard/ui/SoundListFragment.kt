@@ -28,7 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 
 import com.buzbuz.dikkeneksoundboard.R
-import com.buzbuz.dikkeneksoundboard.SoundViewModel
+import com.buzbuz.dikkeneksoundboard.viewmodel.SoundViewModel
 import com.buzbuz.dikkeneksoundboard.database.Sound
 
 /** Fragment displaying the list of sounds. */
