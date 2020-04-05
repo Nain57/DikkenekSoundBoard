@@ -16,8 +16,8 @@
 -->
 <resources>
     <string name="app_name">Dikkenek SoundBoard</string>
-    <string name="tab_all_sounds">All</string>
-    <string name="tab_favourites_sounds">Favourites</string>
-    <string name="empty">Empty</string>
-    <string name="search">Search</string>
+    <string name="tab_all_sounds">Tous</string>
+    <string name="tab_favourites_sounds">Favoris</string>
+    <string name="empty">Vide</string>
+    <string name="search">Rechercher</string>
 </resources>
