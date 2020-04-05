@@ -19,6 +19,8 @@ package com.buzbuz.dikkeneksoundboard.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 
 import com.buzbuz.dikkeneksoundboard.database.Sound
@@ -36,14 +38,23 @@ class SoundViewModel(application: Application) : AndroidViewModel(application) {
     /** The data access object for the sound database. */
     val soundsDao: SoundDao
     /** LiveData upon the list of all sounds. */
-    val allSounds: LiveData<List<Sound>>
+    val sounds: LiveData<List<Sound>>
     /** LiveData upon the list of favourite sounds. */
-    val allFavouriteSounds: LiveData<List<Sound>>
+    val favouriteSounds: LiveData<List<Sound>>
+    /** LiveData upon the filter to be applied on the content of [sounds]. */
+    val soundFilter = MutableLiveData<String>()
 
     init {
         soundsDao = SoundRoomDatabase.getDatabase(application, viewModelScope).soundDao()
-        allSounds = soundsDao.getAllSounds()
-        allFavouriteSounds = soundsDao.getFavouriteSounds()
+        sounds = Transformations.switchMap(soundFilter) { filter ->
+            if (filter.isNullOrBlank()) {
+                soundsDao.getAllSounds()
+            } else {
+                soundsDao.getFilteredSounds(filter)
+            }
+        }
+        favouriteSounds = soundsDao.getFavouriteSounds()
+        soundFilter.value = null
     }
 
     /**

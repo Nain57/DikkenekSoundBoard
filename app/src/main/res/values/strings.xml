@@ -19,4 +19,5 @@
     <string name="tab_all_sounds">All</string>
     <string name="tab_favourites_sounds">Favourites</string>
     <string name="empty">Empty</string>
+    <string name="search">Search</string>
 </resources>

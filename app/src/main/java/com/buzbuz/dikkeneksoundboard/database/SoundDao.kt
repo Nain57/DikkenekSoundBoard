@@ -44,6 +44,16 @@ interface SoundDao {
     fun getFavouriteSounds(): LiveData<List<Sound>>
 
     /**
+     * Get a list of sounds filtered on the name.
+     * <p>
+     * @param filter the filter to be applied.
+     * <p>
+     * @return the filtered list.
+     */
+    @Query("SELECT * FROM sound_table WHERE name LIKE '%' || :filter || '%' ORDER BY name ASC")
+    fun getFilteredSounds(filter: String): LiveData<List<Sound>>
+
+    /**
      * Insert a sound in the database.
      * <p>
      * @param sound the sound to be inserted.

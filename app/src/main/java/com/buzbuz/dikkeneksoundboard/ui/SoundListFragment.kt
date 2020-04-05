@@ -18,18 +18,21 @@ package com.buzbuz.dikkeneksoundboard.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 
 import com.buzbuz.dikkeneksoundboard.R
-import com.buzbuz.dikkeneksoundboard.viewmodel.SoundViewModel
 import com.buzbuz.dikkeneksoundboard.database.Sound
+import com.buzbuz.dikkeneksoundboard.viewmodel.SoundViewModel
 
 /** Fragment displaying the list of sounds. */
 class SoundListFragment : Fragment() {
@@ -56,6 +59,8 @@ class SoundListFragment : Fragment() {
         }
     }
 
+    /** Search icon displayed on the action bar when on the all sound screen. */
+    private lateinit var searchView: SearchView
     /** View shown when there is no sounds available. */
     private lateinit var emptyView: TextView
     /** View displaying the list of sounds. */
@@ -84,6 +89,17 @@ class SoundListFragment : Fragment() {
         soundAdapter.sounds = sounds
     }
 
+    /** Listener upon the content of the search view updating the sound filter.  */
+    private val searchQueryListener = object : SearchView.OnQueryTextListener {
+
+        override fun onQueryTextChange(newText: String?): Boolean {
+            soundModel.soundFilter.value = newText
+            return false
+        }
+
+        override fun onQueryTextSubmit(query: String?): Boolean = false
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_sound, container, false)
 
@@ -102,15 +118,45 @@ class SoundListFragment : Fragment() {
         soundAdapter = SoundListAdapter(soundModel::playSound, soundModel::toggleFavouriteState)
 
         if (isFavourites) {
-            soundModel.allFavouriteSounds.observe(this, observer)
+            soundModel.favouriteSounds.observe(this, observer)
         } else {
-            soundModel.allSounds.observe(this, observer)
+            soundModel.sounds.observe(this, observer)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         soundsView.adapter = soundAdapter
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (!isFavourites) {
+            setHasOptionsMenu(true)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (!isFavourites) {
+            inflater.inflate(R.menu.menu_main, menu)
+            searchView = menu.findItem(R.id.menu_search).actionView as SearchView
+            searchView.setOnQueryTextListener(searchQueryListener)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setMenuVisibility(!isFavourites)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        if (!isFavourites) {
+            searchView.setQuery(null, true)
+            searchView.isIconified = true
+        }
     }
 
     override fun onStop() {
@@ -122,9 +168,9 @@ class SoundListFragment : Fragment() {
         super.onDestroy()
 
         if (isFavourites) {
-            soundModel.allFavouriteSounds.removeObservers(this)
+            soundModel.favouriteSounds.removeObservers(this)
         } else {
-            soundModel.allSounds.removeObservers(this)
+            soundModel.sounds.removeObservers(this)
         }
     }
 }
